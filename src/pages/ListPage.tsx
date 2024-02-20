@@ -10,6 +10,8 @@ import Filter from "../components/Filter";
 
 const ListPage = () => {
   const [carClasses, setCarClasses] = useState<CarClassItem[]>([]);
+  const [filters, setFilters] = useState({});
+  const [showDetails, setShowDetails] = useState({});
 
   useEffect(() => {
     fetch("http://localhost:8080/carClasses")
