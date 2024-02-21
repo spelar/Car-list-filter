@@ -1,51 +1,55 @@
 import styled from "@emotion/styled";
+import { FiltersState } from "../pages/ListPage";
 
-export type FilterType = "carType" | "region" | "price" | string;
+export type FilterType = "carType" | "region" | "price";
 
 interface FilterPopupProps {
   filterType: FilterType;
   closePopup: () => void;
+  selectedFilters: FiltersState;
+  setSelectedFilters: React.Dispatch<React.SetStateAction<FiltersState>>;
 }
 
-const FilterPopup = ({ filterType, closePopup }: FilterPopupProps) => {
+const FilterPopup = ({
+  filterType,
+  closePopup,
+  selectedFilters,
+  setSelectedFilters,
+}: FilterPopupProps) => {
+  const isActive = (option: string) => {
+    return selectedFilters[filterType as keyof FiltersState].includes(option);
+  };
+
   const renderButtons = (options: string[]) => {
     return options.map((option) => (
       <ButtonContainer key={option}>
-        <OptionButton>{option}</OptionButton>
+        <OptionButton
+          onClick={() => handleOptionClick(option)}
+          className={isActive(option) ? "active" : ""}
+        >
+          {option}
+        </OptionButton>
       </ButtonContainer>
     ));
   };
 
-  const renderOptions = () => {
-    switch (filterType) {
-      case "carType":
-        return renderButtons([
-          "경형/소형",
-          "준중형",
-          "중형/대형",
-          "수입",
-          "SUV",
-        ]);
-      case "region":
-        return renderButtons([
-          "서울/경기/인천",
-          "제주도",
-          "부산/창원",
-          "대구/경북",
-          "대전",
-          "광주",
-        ]);
-      case "price":
-        return renderButtons(["낮은 가격순", "높은 가격순"]);
-      default:
-        return null;
+  const handleOptionClick = (option: string) => {
+    if (filterType === "carType") {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        carType: prev.carType.includes(option)
+          ? prev.carType.filter((item) => item !== option)
+          : [...prev.carType, option],
+        tags: prev.tags,
+      }));
     }
   };
 
   return (
     <PopupContainer>
       <CloseButton onClick={closePopup}>X</CloseButton>
-      <OptionsContainer>{renderOptions()}</OptionsContainer>
+      {filterType === "carType" &&
+        renderButtons(["경형/소형", "준중형", "중형/대형", "수입", "SUV"])}
     </PopupContainer>
   );
 };
@@ -67,12 +71,6 @@ const PopupContainer = styled.div`
   padding-top: 50px;
 `;
 
-const OptionsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-`;
-
 const ButtonContainer = styled.div`
   margin-bottom: 10px;
   width: calc(50% - 5px);
@@ -80,6 +78,11 @@ const ButtonContainer = styled.div`
 
 const OptionButton = styled.button`
   width: 100%;
+  &.active {
+    color: white;
+    background-color: #007bff;
+    border-color: #0056b3;
+  }
 `;
 
 const CloseButton = styled.button`

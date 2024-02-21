@@ -8,10 +8,19 @@ import {
 import { CarClassItem } from "../types";
 import Filter from "../components/Filter";
 
+export type FiltersState = {
+  carType: string[];
+  tags: string[];
+};
+
+const initialFiltersState: FiltersState = {
+  carType: [],
+  tags: [],
+};
+
 const ListPage = () => {
   const [carClasses, setCarClasses] = useState<CarClassItem[]>([]);
-  const [filters, setFilters] = useState({});
-  const [showDetails, setShowDetails] = useState({});
+  const [filters, setFilters] = useState<FiltersState>(initialFiltersState);
 
   useEffect(() => {
     fetch("http://localhost:8080/carClasses")
@@ -32,6 +41,18 @@ const ListPage = () => {
       });
   }, []);
 
+  const isFilterMatch = (car: CarClassItem): boolean => {
+    const carTypeMatch =
+      filters.carType.length === 0 || filters.carType.includes(car.carModel);
+    const tagMatch =
+      filters.tags.length === 0 ||
+      filters.tags.every((tag) => car.carTypeTags.includes(tag));
+
+    return carTypeMatch && tagMatch;
+  };
+
+  const filteredCarClasses = carClasses.filter(isFilterMatch);
+
   if (!carClasses.length) {
     return <div>Loading...</div>;
   }
@@ -40,44 +61,54 @@ const ListPage = () => {
     <Container>
       <h1>차량 리스트</h1>
       <nav aria-label="차량 필터 옵션">
-        <Filter />
+        <Filter setFilters={setFilters} />
       </nav>
       <section aria-label="차량 목록">
         <CarList>
-          {carClasses.map((car) => (
-            <CarItem key={car.carClassId}>
-              <CarImageContainer>
-                <CarImage src={car.image} alt={car.carClassName} />
-              </CarImageContainer>
-              <CarDetails>
-                <CarInfoContainer>
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <h2>{car.carClassName}</h2>
-                    {car.carTypeTags.map((tag) => (
-                      <Badge key={tag}>{tag}</Badge>
-                    ))}
+          {filteredCarClasses.length > 0 ? (
+            filteredCarClasses.map((car) => (
+              <CarItem key={car.carClassId}>
+                <CarImageContainer>
+                  <CarImage src={car.image} alt={car.carClassName} />
+                </CarImageContainer>
+                <CarDetails>
+                  <CarInfoContainer>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <h2>{car.carClassName}</h2>
+                      {car.carTypeTags.map((tag) => (
+                        <Badge key={tag}>{tag}</Badge>
+                      ))}
+                    </div>
+                  </CarInfoContainer>
+                  <div>
+                    {car.discountPercent > 0 ? (
+                      <p>
+                        {calculateDiscountedPrice(
+                          car.price,
+                          car.discountPercent
+                        ).toLocaleString()}
+                        원 (-{car.discountPercent}%)
+                      </p>
+                    ) : (
+                      <p>
+                        {roundPriceToHundreds(car.price).toLocaleString()}원
+                      </p>
+                    )}
+                    {car.year}년 | {formatDistance(car.drivingDistance)}km |{" "}
+                    {Array.from(
+                      car.regionGroups.flatMap((region) => region.split("/"))
+                    ).join(", ")}
                   </div>
-                </CarInfoContainer>
-                <p>
-                  {car.discountPercent > 0 ? (
-                    <p>
-                      {calculateDiscountedPrice(
-                        car.price,
-                        car.discountPercent
-                      ).toLocaleString()}
-                      원 (-{car.discountPercent}%)
-                    </p>
-                  ) : (
-                    <p>{roundPriceToHundreds(car.price).toLocaleString()}원</p>
-                  )}
-                  {car.year}년 | {formatDistance(car.drivingDistance)}km |{" "}
-                  {Array.from(
-                    car.regionGroups.flatMap((region) => region.split("/"))
-                  ).join(", ")}
-                </p>
-              </CarDetails>
-            </CarItem>
-          ))}
+                </CarDetails>
+              </CarItem>
+            ))
+          ) : (
+            <NoCarMessage>
+              선택하신 조건에 맞는 차량이 없습니다.
+              <br />
+              준비된 다른 차량을 확인해 보세요!
+            </NoCarMessage>
+          )}
         </CarList>
       </section>
     </Container>
@@ -116,7 +147,7 @@ const CarImage = styled.img`
 `;
 
 const CarDetails = styled.div`
-  margin-top: 10px;
+  margin: 10px 0px;
   padding: 0 10px;
   text-align: left;
 `;
@@ -136,6 +167,13 @@ const Badge = styled.span`
   &:first-of-type {
     margin-left: 10px;
   }
+`;
+
+const NoCarMessage = styled.div`
+  padding: 20px;
+  color: #666;
+  text-align: center;
+  font-size: 1rem;
 `;
 
 export default ListPage;
