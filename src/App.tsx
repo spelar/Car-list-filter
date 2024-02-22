@@ -6,8 +6,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Navigate replace to="/list" />} />
-        <Route path="/list" element={<ListPage />} />
+        <Route path="/" element={<ListPage />} />
+        <Route path="/car-list-filter" element={<ListPage />} />
       </Routes>
     </BrowserRouter>
   );
