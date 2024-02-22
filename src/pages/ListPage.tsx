@@ -75,7 +75,9 @@ const ListPage = () => {
       );
     const regionMatch =
       filters.region.length === 0 ||
-      filters.region.some((region) => car.regionGroups.includes(region));
+      filters.region.some(
+        (region) => car.regionGroups?.includes(region) ?? false
+      );
 
     return carTypeMatch && tagMatch && regionMatch;
   };
