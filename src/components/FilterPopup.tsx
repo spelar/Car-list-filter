@@ -42,6 +42,23 @@ const FilterPopup = ({
           : [...prev.carType, option],
         tags: prev.tags,
       }));
+    } else if (filterType === "region") {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        carType: prev.carType,
+        tags: prev.tags,
+        region: prev.region.includes(option)
+          ? prev.region.filter((item) => item !== option)
+          : [...prev.region, option],
+      }));
+    } else if (filterType === "price") {
+      setSelectedFilters((prev) => ({
+        ...prev,
+        carType: prev.carType,
+        tags: prev.tags,
+        region: prev.region,
+        price: prev.price === option ? "" : option,
+      }));
     }
   };
 
@@ -50,6 +67,16 @@ const FilterPopup = ({
       <CloseButton onClick={closePopup}>X</CloseButton>
       {filterType === "carType" &&
         renderButtons(["경형/소형", "준중형", "중형/대형", "수입", "SUV"])}
+      {filterType === "region" &&
+        renderButtons([
+          "서울/경기/인천",
+          "제주도",
+          "부산/창원",
+          "대구/경북",
+          "대전",
+          "광주",
+        ])}
+      {filterType === "price" && renderButtons(["낮은 가격순", "높은 가격순"])}
     </PopupContainer>
   );
 };
