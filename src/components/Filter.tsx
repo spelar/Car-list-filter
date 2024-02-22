@@ -13,7 +13,7 @@ function Filter({ setFilters }: FilterProps) {
   const savedFilters = localStorage.getItem("selectedFilters");
   const initialFilters = savedFilters
     ? JSON.parse(savedFilters)
-    : { carType: [], tags: [], region: [], price: null };
+    : { carType: [], tags: [], region: [], price: "" };
   const [activeFilter, setActiveFilter] = useState("");
   const [selectedFilters, setSelectedFilters] =
     useState<FiltersState>(initialFilters);
