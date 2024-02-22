@@ -21,16 +21,20 @@ const FilterPopup = ({
   };
 
   const renderButtons = (options: string[]) => {
-    return options.map((option) => (
-      <ButtonContainer key={option}>
-        <OptionButton
-          onClick={() => handleOptionClick(option)}
-          className={isActive(option) ? "active" : ""}
-        >
-          {option}
-        </OptionButton>
-      </ButtonContainer>
-    ));
+    return (
+      <ButtonsContainer>
+        {options.map((option) => (
+          <ButtonContainer key={option}>
+            <OptionButton
+              onClick={() => handleOptionClick(option)}
+              className={isActive(option) ? "active" : ""}
+            >
+              {option}
+            </OptionButton>
+          </ButtonContainer>
+        ))}
+      </ButtonsContainer>
+    );
   };
 
   const handleOptionClick = (option: string) => {
@@ -96,6 +100,12 @@ const PopupContainer = styled.div`
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding-top: 50px;
+`;
+
+const ButtonsContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 const ButtonContainer = styled.div`
