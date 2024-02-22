@@ -47,7 +47,7 @@ const ListPage = () => {
   const [filters, setFilters] = useState<FiltersState>(initialFiltersState);
 
   useEffect(() => {
-    fetch("http://localhost:8080/carClasses")
+    fetch("https://spelar.github.io/car-list-filter/db.json")
       .then((response) => {
         if (!response.ok) {
           throw new Error("서버에서 데이터를 가져오는 데 실패했습니다.");
