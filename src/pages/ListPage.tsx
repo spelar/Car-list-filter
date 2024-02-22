@@ -56,7 +56,7 @@ const ListPage = () => {
       })
       .then((data) => {
         if (data) {
-          setCarClasses(data);
+          setCarClasses(data.carClasses);
         }
       })
       .catch((error) => {
@@ -70,7 +70,9 @@ const ListPage = () => {
       filters.carType.length === 0 || filters.carType.includes(car.carModel);
     const tagMatch =
       filters.tags.length === 0 ||
-      filters.tags.every((tag) => car.carTypeTags.includes(tag));
+      filters.tags.every(
+        (tag) => car.carTypeTags && car.carTypeTags.includes(tag)
+      );
     const regionMatch =
       filters.region.length === 0 ||
       filters.region.some((region) => car.regionGroups.includes(region));
@@ -103,7 +105,7 @@ const ListPage = () => {
                   <CarInfoContainer>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <h2>{car.carClassName}</h2>
-                      {car.carTypeTags.map((tag) => (
+                      {car.carTypeTags?.map((tag) => (
                         <Badge key={tag}>{tag}</Badge>
                       ))}
                     </div>
@@ -123,9 +125,10 @@ const ListPage = () => {
                       </p>
                     )}
                     {car.year}년 | {formatDistance(car.drivingDistance)}km |{" "}
-                    {Array.from(
-                      car.regionGroups.flatMap((region) => region.split("/"))
-                    ).join(", ")}
+                    {car.regionGroups &&
+                      Array.from(
+                        car.regionGroups.flatMap((region) => region.split("/"))
+                      ).join(", ")}
                   </div>
                 </CarDetails>
               </CarItem>
