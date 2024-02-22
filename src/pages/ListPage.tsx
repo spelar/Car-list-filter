@@ -11,11 +11,35 @@ import Filter from "../components/Filter";
 export type FiltersState = {
   carType: string[];
   tags: string[];
+  region: string[];
+  price: string;
 };
 
 const initialFiltersState: FiltersState = {
   carType: [],
   tags: [],
+  region: [],
+  price: "",
+};
+
+const getSortedCarClasses = (
+  carClasses: CarClassItem[],
+  priceFilter: string
+) => {
+  if (priceFilter === "낮은 가격순") {
+    return [...carClasses].sort(
+      (a, b) =>
+        calculateDiscountedPrice(a.price, a.discountPercent) -
+        calculateDiscountedPrice(b.price, b.discountPercent)
+    );
+  } else if (priceFilter === "높은 가격순") {
+    return [...carClasses].sort(
+      (a, b) =>
+        calculateDiscountedPrice(b.price, b.discountPercent) -
+        calculateDiscountedPrice(a.price, a.discountPercent)
+    );
+  }
+  return carClasses;
 };
 
 const ListPage = () => {
@@ -47,11 +71,15 @@ const ListPage = () => {
     const tagMatch =
       filters.tags.length === 0 ||
       filters.tags.every((tag) => car.carTypeTags.includes(tag));
+    const regionMatch =
+      filters.region.length === 0 ||
+      filters.region.some((region) => car.regionGroups.includes(region));
 
-    return carTypeMatch && tagMatch;
+    return carTypeMatch && tagMatch && regionMatch;
   };
 
-  const filteredCarClasses = carClasses.filter(isFilterMatch);
+  const sortedCarClasses = getSortedCarClasses(carClasses, filters.price);
+  const filteredCarClasses = sortedCarClasses.filter(isFilterMatch);
 
   if (!carClasses.length) {
     return <div>Loading...</div>;

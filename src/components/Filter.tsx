@@ -13,7 +13,7 @@ function Filter({ setFilters }: FilterProps) {
   const savedFilters = localStorage.getItem("selectedFilters");
   const initialFilters = savedFilters
     ? JSON.parse(savedFilters)
-    : { carType: [], tags: [] };
+    : { carType: [], tags: [], region: [], price: null };
   const [activeFilter, setActiveFilter] = useState("");
   const [selectedFilters, setSelectedFilters] =
     useState<FiltersState>(initialFilters);
@@ -36,7 +36,7 @@ function Filter({ setFilters }: FilterProps) {
   }, [selectedFilters, setFilters]);
 
   const resetFilters = () => {
-    setSelectedFilters({ carType: [], tags: [] });
+    setSelectedFilters({ carType: [], tags: [], region: [], price: "" });
   };
 
   const handleFilterClick = (filterName: string) => {
@@ -61,18 +61,30 @@ function Filter({ setFilters }: FilterProps) {
     ["경형/소형", "준중형", "중형/대형", "수입", "SUV"].includes(filter)
   );
 
-  const clearCarTypeFilters = (event: React.MouseEvent<HTMLSpanElement>) => {
+  const isRegionFilterActive = selectedFilters.region.some((filter) =>
+    [
+      "서울/경기/인천",
+      "제주도",
+      "부산/창원",
+      "대구/경북",
+      "대전",
+      "광주",
+    ].includes(filter)
+  );
+
+  const isPriceFilterActive = selectedFilters.price !== "";
+
+  const handleCloseClick = (
+    event: React.MouseEvent<HTMLSpanElement>,
+    filterType: string
+  ) => {
     event.stopPropagation();
     setSelectedFilters((prevFilters) => {
-      const newCarTypeFilters = prevFilters.carType.filter(
-        (filter) =>
-          !["경형/소형", "준중형", "중형/대형", "수입", "SUV"].includes(filter)
-      );
-
-      return {
+      const newFilters = {
         ...prevFilters,
-        carType: newCarTypeFilters,
+        [filterType]: filterType === "price" ? "" : [],
       };
+      return newFilters;
     });
     setActiveFilter("");
   };
@@ -88,13 +100,35 @@ function Filter({ setFilters }: FilterProps) {
         >
           차종 분류
           {isCarTypeFilterActive && (
-            <CloseButton onClick={(event) => clearCarTypeFilters(event)}>
+            <CloseButton
+              onClick={(event) => handleCloseClick(event, "carType")}
+            >
               X
             </CloseButton>
           )}
         </CarTypeButton>
-        <button onClick={() => handleFilterClick("region")}>지역</button>
-        <button onClick={() => handleFilterClick("price")}>가격</button>
+        <CarTypeButton
+          onClick={() => handleFilterClick("region")}
+          className={isRegionFilterActive ? "active" : ""}
+        >
+          지역
+          {isRegionFilterActive && (
+            <CloseButton onClick={(event) => handleCloseClick(event, "region")}>
+              X
+            </CloseButton>
+          )}
+        </CarTypeButton>
+        <CarTypeButton
+          onClick={() => handleFilterClick("price")}
+          className={isPriceFilterActive ? "active" : ""}
+        >
+          가격
+          {isPriceFilterActive && (
+            <CloseButton onClick={(event) => handleCloseClick(event, "price")}>
+              X
+            </CloseButton>
+          )}
+        </CarTypeButton>
         {["빠른대여", "신차급", "인기", "특가", "프리미엄"].map((tag) => (
           <OptionButton
             key={tag}
@@ -105,6 +139,22 @@ function Filter({ setFilters }: FilterProps) {
           </OptionButton>
         ))}
         {activeFilter === "carType" && (
+          <FilterPopup
+            filterType={activeFilter}
+            closePopup={closePopup}
+            selectedFilters={selectedFilters}
+            setSelectedFilters={setSelectedFilters}
+          />
+        )}
+        {activeFilter === "region" && (
+          <FilterPopup
+            filterType={activeFilter}
+            closePopup={closePopup}
+            selectedFilters={selectedFilters}
+            setSelectedFilters={setSelectedFilters}
+          />
+        )}
+        {activeFilter === "price" && (
           <FilterPopup
             filterType={activeFilter}
             closePopup={closePopup}
