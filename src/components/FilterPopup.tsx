@@ -63,6 +63,8 @@ const FilterPopup = ({
         region: prev.region,
         price: prev.price === option ? "" : option,
       }));
+    } else {
+      console.error(`Unknown filterType: ${filterType}`);
     }
   };
 
