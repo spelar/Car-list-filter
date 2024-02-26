@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import "./App.css";
-import ListPage from "./pages/ListPage";
+import "@src/App.css";
+import ListPage from "@src/pages/ListPage";
 
 function App() {
   return (

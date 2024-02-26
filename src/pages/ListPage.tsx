@@ -4,9 +4,9 @@ import {
   calculateDiscountedPrice,
   formatDistance,
   roundPriceToHundreds,
-} from "../utils";
-import { CarClassItem } from "../types";
-import Filter from "../components/Filter";
+} from "@src/utils";
+import { CarClassItem } from "@src/types";
+import Filter from "@src/components/Filter";
 
 export type FiltersState = {
   carType: string[];
