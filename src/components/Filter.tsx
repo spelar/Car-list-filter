@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import { useEffect, useState } from "react";
-import FilterPopup from "./FilterPopup";
-import { FiltersState } from "../pages/ListPage";
+import FilterPopup from "@src/components/FilterPopup";
+import { FiltersState } from "@src/pages/ListPage";
 
 type SetFiltersFunction = (filters: FiltersState) => void;
 

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import { FiltersState } from "../pages/ListPage";
+import { FiltersState } from "@src/pages/ListPage";
 
 export type FilterType = "carType" | "region" | "price";
 
